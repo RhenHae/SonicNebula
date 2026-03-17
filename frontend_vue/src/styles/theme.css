@@ -1,0 +1,40 @@
+/* theme.css */
+:root {
+  /* 夜间模式（默认） */
+  --bg-color: #05050a;
+  --bg-gradient: radial-gradient(circle at center, #1a1a24 0%, #05050a 100%);
+  --text-main: #ffffff;
+  --text-sub: #888888;
+  --panel-bg: rgba(20,20,25,0.95);
+  --border-color: rgba(0, 255, 204, 0.3);
+  --primary-color: #00FFCC;          /* 主题青 */
+  --primary-glow: rgba(0, 255, 204, 0.6);
+  --primary-faint: rgba(0, 255, 204, 0.1);
+  --island-bg: rgba(20,20,25,0.8);
+
+  /* 导航栏专用变量（夜间） */
+  --nav-bg: #000000;                  /* 纯黑背景 */
+  --nav-text: #888888;                 /* 普通文字灰色 */
+  --nav-text-active: #00FFCC;          /* 激活项青色 */
+  --nav-blur: blur(20px);              /* 夜间保留毛玻璃 */
+}
+
+/* 日间模式 */
+.theme-light {
+  --bg-color: #f8fafc;
+  --bg-gradient: linear-gradient(145deg, #ffffff 0%, #f1f5f9 100%);
+  --text-main: #0f172a;
+  --text-sub: #334155;
+  --panel-bg: rgba(255,255,255,0.9);
+  --border-color: rgba(0, 255, 204, 0.2);
+  --primary-color: #00CCAA;            /* 日间青（稍深） */
+  --primary-glow: rgba(0, 255, 204, 0.4);
+  --primary-faint: rgba(0, 255, 204, 0.1);
+  --island-bg: rgba(255,255,255,0.8);
+
+  /* 导航栏专用变量（日间） */
+  --nav-bg: #00CCAA;                   /* 青色背景 */
+  --nav-text: #000000;                  /* 普通文字黑色 */
+  --nav-text-active: #000000;           /* 激活项文字黑色 */
+  --nav-blur: none;                     /* 日间取消毛玻璃，保持纯色 */
+}

@@ -1,0 +1,30 @@
+# --- Python 虚拟环境与缓存 ---
+.venv/
+__pycache__/
+*.pyc
+.env
+
+# --- 前端构建产物与依赖 ---
+frontend_vue/node_modules/
+frontend_vue/dist/
+
+# --- 大数据与隐私隔离区 (保护你的硬盘不被撑爆) ---
+# 忽略 data_storage 下的所有文件
+data_storage/**
+
+# 但是，强制保留基础文件夹本身的追踪 (通过保留 .gitkeep)
+!data_storage/raw_audio/
+!data_storage/raw_audio/.gitkeep
+
+!data_storage/data_lake/
+!data_storage/data_lake/.gitkeep
+
+!data_storage/output/
+!data_storage/output/.gitkeep
+
+!data_storage/chroma_db/
+!data_storage/chroma_db/.gitkeep
+
+# 忽略临时 Spark 日志
+spark-warehouse/
+derby.log

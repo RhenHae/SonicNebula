@@ -1,0 +1,7 @@
+# ProjectMusicSpectrum 依赖清单
+pyspark==3.4.1
+pandas==2.0.3
+numpy==1.24.3
+streamlit==1.35.0
+plotly==6.6.0
+scikit-learn==1.3.0
