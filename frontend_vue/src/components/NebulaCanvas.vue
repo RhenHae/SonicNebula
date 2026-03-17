@@ -20,7 +20,7 @@ const ENGINE_CONFIG = {
   ROTATION_SPEED: 0.0006,       // 星系自转角速度
   FOLLOW_SPEED: 0.05,           // 阻尼跟随系数
   REPEL_STRENGTH: 10,          // 鼠标斥力绝对强度
-  REPEL_RADIUS: 250,            // 鼠标力场影响半径
+  REPEL_RADIUS: 125,            // 鼠标力场影响半径
   EDGE_FADE_THRESHOLD: -300,    // 边缘渐隐触发距离
   BREATH_SPEED_BASE: 0.015,     // 基础呼吸速度
   BREATH_SPEED_VAR: 0.02        // 呼吸速度随机方差

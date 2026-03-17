@@ -13,9 +13,7 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# 2. 跨域配置 (CORS) - 极其重要！
-# 因为你的 Vue 前端在 localhost:5173，FastAPI 在 localhost:8000
-# 没有这个配置，浏览器会拦截所有请求（CORS 报错）
+# 2. 跨域配置 (CORS)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"], # 开发阶段允许所有源，生产环境需改写
@@ -24,12 +22,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# 3. 动态路径寻址器 (保证去 data_lake 拿数据的准确性)
+# 3. 动态路径寻址器
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.dirname(CURRENT_DIR)
 DATA_LAKE_DIR = os.path.join(PROJECT_ROOT, "data_storage", "data_lake")
 
-# 4. 全局数据中心 (Singleton 模式，应用启动时加载，避免每次请求都读硬盘)
+# 4. 全局数据中心 
 class DataCenter:
     def __init__(self):
         self.df = None
@@ -57,11 +55,7 @@ class DataCenter:
 # 实例化数据中心
 db = DataCenter()
 
-
-# ==========================================
-# 📌 5. 定义 RESTful API 路由 (给前端调用的接口)
-# ==========================================
-
+# 5. 定义 RESTful API 路由
 @app.get("/")
 async def root():
     return {"status": "online", "message": "SonicNebula Backend is running!"}

@@ -9,7 +9,8 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
 
-const x = ref(-1000)
+
+const x = ref(-1000) // 初始位置放在屏幕外，避免加载时闪现
 const y = ref(-1000)
 
 const handleMouseMove = (e) => {
@@ -29,8 +30,8 @@ onUnmounted(() => {
 <style scoped>
 .mouse-glow {
   position: absolute;
-  width: 400px;
-  height: 400px;
+  width: 200px; /* 调整发光范围大小 */
+  height: 200px;
   background: radial-gradient(circle, var(--primary-faint) 0%, rgba(138,43,226,0.05) 40%, transparent 70%);
   border-radius: 50%;
   transform: translate(-50%, -50%);
