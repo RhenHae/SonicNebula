@@ -2,7 +2,9 @@
 <template>
   <transition name="fade">
     <div v-if="show" class="settings-panel">
+      <!-- 设置项：语言、主题、引擎模式、色彩滤镜 -->
       <h4>{{ t('set_title') }}</h4>
+      <!-- 语言切换 -->
       <div class="set-item">
         <span>{{ t('lang') }}</span>
         <div class="toggle-group">
@@ -10,6 +12,7 @@
           <span :class="{ active: store.lang === 'en' }" @click="store.lang = 'en'">EN</span>
         </div>
       </div>
+      <!-- 主题切换 -->
       <div class="set-item">
         <span>{{ t('theme') }}</span>
         <div class="toggle-group">
@@ -17,12 +20,12 @@
           <span :class="{ active: store.theme === 'light' }" @click="store.theme = 'light'">Light</span>
         </div>
       </div>
+      <!-- 粒子引擎开关 -->
       <div class="set-item">
-        <span>{{ t('engine') }}</span>
-        <label class="switch">
-          <!-- 关键修改：将 v-model 绑定改为 store.qualityMode -->
-          <input type="checkbox" v-model="store.qualityMode" />
-          <span class="slider round"></span>
+        <span>{{ t('engine') }}</span><!-- 这个开关直接绑定到全局 store 的 qualityMode，控制星空引擎的粒子数量 -->
+        <label class="switch"><!-- 开关组件 -->
+          <input type="checkbox" v-model="store.qualityMode" /><!-- 绑定到 store.qualityMode -->
+          <span class="slider round"></span><!-- 滑块 -->
         </label>
       </div>
       <div class="set-item" style="flex-direction: column; align-items: flex-start; gap: 8px;">

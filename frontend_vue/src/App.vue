@@ -42,10 +42,14 @@ watch(() => route.path, (path) => {
     <SettingsPanel :show="showSettings" />
 
     <!-- 路由视图 -->
-    <div class="router-layer">
+     <div class="router-layer">
       <router-view v-slot="{ Component, route }">
-        <transition :name="route.meta.transition || 'slide-fade'" mode="out-in">
-          <component :is="Component" :key="route.path" />
+        <!-- 这里的 Component 是当前路由对应的组件，route 是当前路由对象 -->
+        <transition :name="route.meta.transition || 'slide-fade'" mode="out-in" appear>
+          <!-- 使用 :key 来确保每次路由变化时都能触发过渡动画 -->
+          <div :key="route.path" style="width: 100%; height: 100%;">
+            <component :is="Component" />
+          </div>
         </transition>
       </router-view>
     </div>

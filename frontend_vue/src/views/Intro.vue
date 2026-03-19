@@ -106,7 +106,7 @@ import FooterDisclaimer from '../components/FooterDisclaimer.vue'
 /* 浮动动画 */
 @keyframes floatUp {
   /* 从下方轻微浮起并淡入 */
-  0% { opacity: 0; transform: translateY(30px); }
+  0% { opacity: 0; transform: translateY(60px); }
   /* 到达最终位置，保持完全可见 */
   100% { opacity: 1; transform: translateY(0); }
 }

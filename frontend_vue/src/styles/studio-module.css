@@ -1,0 +1,74 @@
+/* src/styles/studio-module.css */
+
+/* 子组件根容器：撑满右侧工作台 */
+.studio-module { 
+  display: flex; flex-direction: column; 
+  width: 100%; height: 100%; position: relative; 
+  padding: 30px; box-sizing: border-box;
+}
+
+/* 头部标题区 */
+.workbench-header { 
+  display: flex; justify-content: space-between; align-items: center; 
+  border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; margin-bottom: 20px; flex-shrink: 0;
+}
+.workbench-header h3 { margin: 0; color: #fff; font-size: 22px; font-weight: bold; }
+
+/* 按钮通用样式 */
+.btn { padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; font-size: 14px; border: none; display: inline-flex; align-items: center; gap: 8px;}
+.btn.primary { background: var(--primary-color); color: #000; box-shadow: 0 0 15px var(--primary-glow); }
+.btn.primary:hover { transform: translateY(-2px); box-shadow: 0 0 25px var(--primary-color); }
+.btn.outline { background: transparent; color: var(--text-main); border: 1px solid var(--border-color); }
+.btn.outline:hover { background: var(--primary-faint); }
+.btn-large { font-size: 16px; padding: 15px 40px; border-radius: 30px; margin-top: 20px;}
+
+/* 状态 0/1: 上传准备区 */
+.upload-zone-wrapper { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%;}
+.file-ready-box { 
+  text-align: center; background: rgba(0,255,204,0.05); border: 1px solid var(--primary-color); 
+  padding: 40px; border-radius: 16px; width: 60%; box-sizing: border-box; 
+}
+.upload-icon { font-size: 40px; margin-bottom: 10px; }
+
+/* 状态 2: 处理中动画区 */
+.processing-zone { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.radar-spinner { width: 60px; height: 60px; border: 3px solid rgba(0,255,204,0.2); border-top-color: var(--primary-color); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.progress-bar { width: 400px; height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden; margin-top: 15px; }
+.progress-fill { height: 100%; background: var(--primary-color); transition: width 0.1s linear; box-shadow: 0 0 10px var(--primary-color); }
+.progress-text { font-family: monospace; margin-top: 10px; color: var(--primary-color); font-size: 16px; font-weight: bold;}
+
+/* 状态 3: 结果展示区 */
+.result-zone { flex: 1; display: flex; flex-direction: column; gap: 20px; overflow-y: auto; padding-right: 10px; }
+.result-zone::-webkit-scrollbar { width: 6px; }
+.result-zone::-webkit-scrollbar-thumb { background: rgba(0,255,204,0.3); border-radius: 3px; }
+
+/* ================= 盲源分离专属 UI ================= */
+.tracks-container { display: flex; flex-direction: column; gap: 15px; width: 100%; }
+.track-row { 
+  display: flex; height: 90px; background: rgba(0,0,0,0.6); border-radius: 12px; 
+  align-items: center; border: 1px solid rgba(255,255,255,0.05); padding: 10px 20px;
+}
+.track-controls { width: 160px; display: flex; flex-direction: column; gap: 10px; border-right: 1px solid rgba(255,255,255,0.1); padding-right: 20px;}
+.track-name { font-weight: bold; font-size: 14px; font-family: monospace; }
+.track-btns { display: flex; gap: 10px; }
+.t-btn { width: 32px; height: 32px; border-radius: 6px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #888; font-weight: bold; cursor: pointer; transition: 0.2s; font-size: 13px; display: flex; align-items: center; justify-content: center;}
+.t-btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
+.t-btn.active { background: var(--primary-color); color: #000; border-color: var(--primary-color); box-shadow: 0 0 10px var(--primary-glow); }
+.track-waveform { flex: 1; height: 100%; display: flex; align-items: center; gap: 3px; transition: opacity 0.3s; overflow: hidden; margin-left: 20px;}
+.fake-wave-bar { flex: 1; border-radius: 2px; }
+.result-actions { display: flex; gap: 15px; margin-top: auto; padding-top: 20px; border-top: 1px dashed rgba(255,255,255,0.1); }
+
+/* ================= AI扒谱专属 UI ================= */
+.transcription-container { display: flex; flex-direction: column; gap: 20px; width: 100%;}
+.piano-roll-mock { height: 200px; background: rgba(0,0,0,0.6); border-radius: 12px; position: relative; overflow: hidden; border: 1px solid #333; }
+.midi-note { position: absolute; height: 10px; border-radius: 5px; background: var(--primary-color); box-shadow: 0 0 8px var(--primary-glow); }
+.chord-tracker { background: rgba(0, 255, 204, 0.05); padding: 20px; border-radius: 12px; border: 1px solid rgba(0,255,204,0.2); }
+.chord-ribbon { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 10px; margin-top: 15px;}
+.chord-ribbon::-webkit-scrollbar { height: 4px; }
+.chord-ribbon::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 2px; }
+.chord-block { background: rgba(0, 0, 0, 0.7); border: 1px solid var(--primary-color); color: var(--primary-color); padding: 8px 20px; border-radius: 8px; font-family: monospace; font-weight: bold; font-size: 18px;}
+.ai-review { background: rgba(255,255,255,0.05); padding: 20px; border-radius: 12px; line-height: 1.6; color: #ccc;}
+
+/* ================= 格式转换专属 UI ================= */
+.conversion-container { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 300px; background: rgba(0,255,204,0.05); border-radius: 16px; border: 1px dashed var(--primary-color); margin-bottom: 20px;}
