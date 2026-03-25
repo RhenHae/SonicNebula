@@ -1,18 +1,75 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { store } from '../store.js'
+import axios from 'axios'
 
-// 控制灵动岛展开/收起的状态
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000'
+
+// 状态管理
 const isExpanded = ref(false)
-
-const warpToRandom = () => {
-  // 留给 FastAPI 的接口
-  alert("正在连接 ChromaDB 向量库获取下一首推荐...")
-}
+const isWarping = ref(false)
+let universeCache = [] // 缓存星云坐标，避免每次跃迁都拉取全量数据
 
 const toggleExpand = () => {
   isExpanded.value = !isExpanded.value
 }
+
+// 🚀 核心：真实的随机探索与 AI 点评请求
+const warpToRandom = async () => {
+  if (isWarping.value) return
+  isWarping.value = true
+
+  try {
+    // 1. 获取全宇宙数据作为缓存池
+    if (universeCache.length === 0) {
+      const res = await axios.get(`${API_BASE_URL}/api/nebula_points`)
+      universeCache = res.data.points
+    }
+
+    if (universeCache.length === 0) {
+      alert("⚠️ 宇宙中暂无信号源，请先前往 [歌曲解析] 注入数据！")
+      isWarping.value = false
+      return
+    }
+
+    // 2. 随机挑选一首作为目标点
+    const randomSong = universeCache[Math.floor(Math.random() * universeCache.length)]
+
+    // 3. 瞬间更新前端基础 UI
+    store.activeSong = {
+      title: randomSong.title,
+      artist: randomSong.artist,
+      album: randomSong.album || '未知单曲',
+      genre: randomSong.true_genre,
+      bpm: randomSong.bpm,
+      cover_url: randomSong.cover_url || '',
+      ai_review: '📡 正在连接大模型生成听感测绘...'
+    }
+
+    // 4. 获取 AI 深度点评
+    const reviewRes = await axios.get(`${API_BASE_URL}/api/ai_review`, {
+      params: { title: randomSong.title, artist: randomSong.artist }
+    })
+
+    // 5. 更新真实乐评
+    if (reviewRes.data.status === 'success') {
+      store.activeSong.ai_review = reviewRes.data.review_text
+    }
+
+  } catch (error) {
+    console.error("跃迁失败:", error)
+    store.activeSong.ai_review = "❌ 信号中断，无法连接到语义分析中心。"
+  } finally {
+    isWarping.value = false
+  }
+}
+
+// 页面加载自动触发一次跃迁
+onMounted(() => {
+  if (store.activeSong.title === '等待信号接入...' || !store.activeSong.title) {
+    warpToRandom()
+  }
+})
 </script>
 
 <template>
@@ -29,7 +86,16 @@ const toggleExpand = () => {
             <div class="waveform-box">
                <div v-for="i in 8" :key="i" class="wave-bar" :style="{animationDelay: i*0.1+'s'}"></div>
             </div>
-            <div class="art-placeholder">🎵</div>
+            
+            <!-- 真实封面展示 -->
+             <img 
+              v-if="store.activeSong.cover_url" 
+              :src="store.activeSong.cover_url" 
+              class="art-cover" 
+              alt="cover" 
+              @error="(e) => e.target.src = 'https://ui-avatars.com/api/?name=Music&background=0D0D12&color=00FFCC&size=300'"
+            />
+            <div v-else class="art-placeholder">🎵</div>
           </div>
 
           <!-- 中间基础信息 -->
@@ -38,13 +104,18 @@ const toggleExpand = () => {
               <span class="ai-badge">📅 每日推荐</span>
               <span class="card-tag">{{ store.activeSong.genre }}</span>
             </div>
-            <h4 class="song-title">{{ store.activeSong.title }}</h4>
-            <p class="artist-name">{{ store.activeSong.artist }} <span class="bpm-mark">// {{ store.activeSong.bpm.toFixed(0) }} BPM</span></p>
+            <h4 class="song-title ellipsis" :title="store.activeSong.title">{{ store.activeSong.title }}</h4>
+            <p class="artist-name ellipsis" :title="store.activeSong.artist">
+              {{ store.activeSong.artist }} <span class="bpm-mark">// {{ store.activeSong.bpm.toFixed(0) }} BPM</span>
+            </p>
           </div>
 
           <!-- 右侧操作区 -->
           <div class="island-trailing">
-            <button class="action-btn warp-btn" @click="warpToRandom">✨ 探索下一首</button>
+            <!-- 绑定真实的曲速跃迁事件 -->
+            <button class="action-btn warp-btn" @click="warpToRandom" :disabled="isWarping">
+              {{ isWarping ? '🚀 引擎充能中...' : '✨ 探索下一首' }}
+            </button>
             
             <!-- 展开/收起触发按钮 -->
             <button class="expand-btn" @click="toggleExpand" :title="isExpanded ? '收起详情' : '展开详情'">
@@ -62,11 +133,11 @@ const toggleExpand = () => {
             <div class="meta-grid">
               <div class="meta-item">
                 <span class="meta-label">创作者 (Artist)</span>
-                <span class="meta-value">{{ store.activeSong.artist }}</span>
+                <span class="meta-value ellipsis" :title="store.activeSong.artist">{{ store.activeSong.artist }}</span>
               </div>
               <div class="meta-item">
                 <span class="meta-label">所属专辑 (Album)</span>
-                <span class="meta-value">{{ store.activeSong.album }}</span>
+                <span class="meta-value ellipsis" :title="store.activeSong.album">{{ store.activeSong.album }}</span>
               </div>
               <div class="meta-item">
                 <span class="meta-label">声学流派 (Genre)</span>
@@ -79,12 +150,12 @@ const toggleExpand = () => {
             </div>
 
             <!-- 右侧：AI 简评推荐框 -->
-            <div class="ai-review-box">
+            <div class="ai-review-box custom-scroll">
               <div class="review-header">
                 <span class="bot-icon">🤖</span>
                 <span class="review-title">AI 智能听感分析</span>
               </div>
-              <p class="review-text">
+              <p class="review-text" :class="{'loading-text': isWarping}">
                 {{ store.activeSong.ai_review }}
               </p>
             </div>
@@ -97,6 +168,9 @@ const toggleExpand = () => {
 </template>
 
 <style scoped>
+/* ===========================================
+   组件特有布局样式（不依赖全局类）
+=========================================== */
 .view-container { width: 100vw; height: 100vh; position: relative; pointer-events: none; }
 
 /* 灵动岛外壳容器 (底部固定，水平居中) */
@@ -106,6 +180,7 @@ const toggleExpand = () => {
   left: 50%; 
   transform: translateX(-50%); 
   width: 80vw; 
+  max-width: 1200px;
   z-index: 100; 
   pointer-events: auto; 
 }
@@ -129,9 +204,11 @@ const toggleExpand = () => {
 .island-main { display: flex; align-items: center; width: 100%; height: 80px; }
 .island-leading { display: flex; align-items: center; gap: 20px; width: 20%; }
 .waveform-box { display: flex; align-items: flex-end; gap: 3px; height: 30px; }
-.wave-bar { width: 3px; background: var(--primary-color); animation: waveMove 1s infinite ease-in-out; }
+.wave-bar { width: 3px; background: var(--primary-color); animation: waveMove 1s infinite ease-in-out; border-radius: 2px; }
 @keyframes waveMove { 0%, 100% { height: 5px; } 50% { height: 25px; } }
-.art-placeholder { width: 60px; height: 60px; background: linear-gradient(135deg, #1e3c72, #2a5298); border-radius: 12px; display: flex; justify-content: center; align-items: center; font-size: 24px; }
+
+.art-placeholder { width: 60px; height: 60px; background: linear-gradient(135deg, #1e3c72, #2a5298); border-radius: 12px; display: flex; justify-content: center; align-items: center; font-size: 24px; flex-shrink: 0; }
+.art-cover { width: 60px; height: 60px; border-radius: 12px; object-fit: cover; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 4px 10px rgba(0,0,0,0.3); flex-shrink: 0; }
 
 .island-body { flex: 1; display: flex; flex-direction: column; justify-content: center; margin-left: 20px; }
 .info-header { display: flex; gap: 12px; margin-bottom: 4px; align-items: center; }
@@ -141,61 +218,54 @@ const toggleExpand = () => {
 .artist-name { margin: 4px 0 0; color: var(--text-sub); font-size: 14px; }
 .bpm-mark { color: #555; font-size: 12px; margin-left: 10px; font-family: monospace; }
 
+/* 文本省略 */
+.ellipsis { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
 /* 按钮区 */
 .island-trailing { width: 25%; display: flex; justify-content: flex-end; align-items: center; gap: 15px; }
 .action-btn { background: rgba(255,255,255,0.05); color: var(--text-main); border: 1px solid rgba(255,255,255,0.2); padding: 12px 24px; border-radius: 30px; cursor: pointer; font-weight: bold; transition: 0.3s; }
-.warp-btn:hover { border-color: var(--primary-color); color: var(--primary-color); background: rgba(0,255,204,0.1); }
+.warp-btn:hover:not(:disabled) { border-color: var(--primary-color); color: var(--primary-color); background: rgba(0,255,204,0.1); }
+.warp-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
 /* 展开切换箭头 */
 .expand-btn { 
   background: transparent; border: none; color: var(--text-main); font-size: 16px; cursor: pointer; 
   padding: 10px; border-radius: 50%; transition: 0.3s; display: flex; align-items: center; justify-content: center;
 }
-/* 鼠标悬停时的视觉反馈 */
 .expand-btn:hover { color: var(--primary-color); background: rgba(0,255,204,0.1); }
-/* 箭头旋转状态 */
 .chevron { transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1); display: inline-block; }
-/* 旋转180度表示展开状态，颜色变为主题色 */
 .chevron.rotated { transform: rotate(180deg); color: var(--primary-color); }
 
 /* 下半部：深度详情区 (高度动画核心) */
 .island-details {
   width: 100%;
-  max-height: 0;       /* 初始隐藏 */
+  max-height: 0;
   opacity: 0;
   overflow: hidden;
   transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
 }
-
-/* 激活展开状态 */
 .is-expanded .island-details {
-  max-height: 300px;   /* 容纳内容的最大高度 */
+  max-height: 300px;
   opacity: 1;
   margin-top: 20px;
 }
-
 .detail-divider {
   width: 100%; height: 1px; background: rgba(255,255,255,0.1); margin-bottom: 20px;
 }
-
 .detail-content {
   display: flex; gap: 40px; padding-bottom: 10px;
 }
 
 /* 左侧：四个属性方块 */
-/* 使用 CSS Grid 来创建两列两行的布局 */
 .meta-grid {
   flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 15px;
 }
-/* 每个属性方块的样式 */
 .meta-item {
   background: rgba(0,0,0,0.2); padding: 12px 15px; border-radius: 8px;
   display: flex; flex-direction: column; gap: 5px;
   border: 1px solid rgba(255,255,255,0.03);
 }
-/* 标签和数值的样式 */
 .meta-label { color: var(--text-main); font-size: 12px; }
-/* 数值部分加粗，单行显示，超出部分省略号 */
 .meta-value { color: var(--text-main); font-size: 14px; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 /* 右侧：AI 简评框 */
@@ -204,40 +274,26 @@ const toggleExpand = () => {
   border-left: 4px solid var(--primary-color); border-radius: 0 8px 8px 0;
   padding: 15px 20px; display: flex; flex-direction: column;
 }
-/* AI 简评标题部分 */
 .review-header { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
-/* 机器人图标和标题样式 */
 .bot-icon { font-size: 18px; }
-/* AI 简评标题 */
 .review-title { color: var(--primary-color); font-weight: bold; font-size: 14px; }
-/* AI 简评内容，支持多行文本，文本对齐为两端 */
 .review-text { margin: 0; color: var(--nav-text); font-size: 13px; line-height: 1.6; text-align: justify; }
 
-/* 日间模式覆盖 (基于主题变量) */
-.theme-light .wave-bar {
-  background: var(--nav-text); /* 日间黑色 */
-}
-.theme-light .card-tag {
-  border-color: var(--nav-text);
-  color: var(--nav-text);
-}
-.theme-light .giant-island {
-  border-color: var(--nav-text); /* 容器包边改为黑色 */
-}
-.theme-light .ai-review-box {
-  border-left-color: var(--nav-text); /* AI 边框黑色 */
-}
-.theme-light .review-title {
-  color: var(--nav-text); /* AI 标题黑色 */
-}
-.theme-light .chevron.rotated {
-  color: var(--nav-text); /* 旋转箭头黑色 */
-}
-.theme-light .genre-value {
-  color: var(--nav-text) !important; /* 流派文字黑色 */
-}
-.theme-light .expand-btn:hover {
-  color: var(--nav-text); /* 展开按钮悬停黑色 */
-  background: rgba(0, 0, 0, 0.1);
-}
+/* 呼吸文字动画 */
+.loading-text { animation: pulseText 1.5s infinite alternate; color: var(--primary-color) !important; font-family: monospace; }
+@keyframes pulseText { 0% { opacity: 0.5; } 100% { opacity: 1; } }
+
+/* 滚动条 */
+.custom-scroll::-webkit-scrollbar { width: 4px; }
+.custom-scroll::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 2px; }
+
+/* 日间模式覆盖 */
+.theme-light .wave-bar { background: var(--nav-text); }
+.theme-light .card-tag { border-color: var(--nav-text); color: var(--nav-text); }
+.theme-light .giant-island { border-color: var(--nav-text); }
+.theme-light .ai-review-box { border-left-color: var(--nav-text); }
+.theme-light .review-title { color: var(--nav-text); }
+.theme-light .chevron.rotated { color: var(--nav-text); }
+.theme-light .genre-value { color: var(--nav-text) !important; }
+.theme-light .expand-btn:hover { color: var(--nav-text); background: rgba(0, 0, 0, 0.1); }
 </style>

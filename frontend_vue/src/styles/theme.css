@@ -1,4 +1,8 @@
-/* theme.css */
+/* src/styles/theme.css */
+
+/* =========================================================
+   🎨 全局双轴 CSS 变量引擎 (Dual-Axis CSS Variables)
+========================================================= */
 :root {
   /* 夜间模式（默认） */
   --bg-color: #05050a;
@@ -11,6 +15,7 @@
   --primary-glow: rgba(0, 255, 204, 0.6);
   --primary-faint: rgba(0, 255, 204, 0.1);
   --island-bg: rgba(20,20,25,0.8);
+  --overlay-bg: rgba(0, 0, 0, 0.2);  /* 核心：全屏遮罩的默认背景色 */
 
   /* 导航栏专用变量（夜间） */
   --nav-bg: #000000;                  /* 纯黑背景 */
@@ -20,7 +25,7 @@
 }
 
 /* 日间模式 */
-.theme-light {
+body.theme-light {
   --bg-color: #f8fafc;
   --bg-gradient: linear-gradient(145deg, #ffffff 0%, #f1f5f9 100%);
   --text-main: #0f172a;
@@ -30,11 +35,122 @@
   --primary-color: #00CCAA;            /* 日间青（稍深） */
   --primary-glow: rgba(0, 255, 204, 0.4);
   --primary-faint: rgba(0, 255, 204, 0.1);
-  --island-bg: rgba(255,255,255,0.8);
+  --island-bg: rgba(255, 255, 255, 0.8); /* 白色半透明 */
+  --overlay-bg: rgba(255, 255, 255, 0.2);
 
   /* 导航栏专用变量（日间） */
   --nav-bg: #00CCAA;                   /* 青色背景 */
-  --nav-text: #000000;                  /* 普通文字黑色 */
-  --nav-text-active: #000000;           /* 激活项文字黑色 */
+  --nav-text: #333333;                  /* 普通文字深灰 */
+  --nav-text-active: #000000;           /* 激活项文字纯黑 */
   --nav-blur: none;                     /* 日间取消毛玻璃，保持纯色 */
 }
+
+/* 基础重置 */
+body, html { 
+  margin: 0; padding: 0; width: 100%; height: 100%; 
+  overflow: hidden; background: var(--bg-gradient); 
+  font-family: sans-serif; color: var(--text-main); 
+  transition: background 0.5s, color 0.5s; 
+}
+.app-wrapper { position: relative; width: 100vw; height: 100vh; }
+
+/* =========================================================
+   🧱 原子化布局类 (Atomic Layout Utility)
+========================================================= */
+.flex-col { display: flex; flex-direction: column; }
+.flex-row-center { display: flex; align-items: center; gap: 10px; }
+.flex-row-between { display: flex; justify-content: space-between; align-items: center; }
+.flex-1 { flex: 1; min-height: 0; min-width: 0; }
+.flex-shrink-0 { flex-shrink: 0; }
+.ellipsis { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* 文本通用 */
+.primary-text { color: var(--primary-color) !important; margin: 0; }
+.sub-text { color: var(--text-sub); font-size: 13px; margin: 0; }
+
+/* 标准数据模块标题 */
+.box-title { color: var(--text-main); margin: 0 0 10px 0; font-size: 15px; font-weight: bold; letter-spacing: 1px; display: flex; align-items: center; gap: 8px;}
+.box-title::before { content: ''; display: block; width: 4px; height: 14px; background: var(--primary-color); border-radius: 2px;}
+
+/* 徽章 (Badge) */
+.badge { background: var(--primary-color); color: var(--bg-color); padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; }
+
+/* 通用按钮 */
+.action-btn { padding: 6px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.3s; font-size: 12px; border: none; display: inline-flex; align-items: center; justify-content: center; gap: 6px;}
+.action-btn.primary { background: var(--primary-color); color: #000; box-shadow: 0 0 15px var(--primary-glow); }
+.action-btn.primary:hover { transform: translateY(-2px); box-shadow: 0 0 25px var(--primary-color); }
+.action-btn.outline { background: transparent; color: var(--text-main); border: 1px solid var(--border-color); }
+.action-btn.outline:hover { background: var(--primary-faint); border-color: var(--primary-color); }
+.btn-large { font-size: 16px; padding: 15px 40px; border-radius: 30px; margin-top: 20px;}
+
+/* =========================================================
+   🔮 核心组件类 (UI Components)
+========================================================= */
+
+/* 🌟 全局大一统毛玻璃遮罩 (用于盖住底层星空) */
+.global-glass-overlay {
+  position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
+  background: var(--overlay-bg);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  z-index: 10; display: flex; justify-content: center; align-items: center;
+  pointer-events: auto; /* 阻挡底层星空点击 */
+}
+
+/* 🪟 通用玻璃态面板 (Glass Panel) 
+   注意：背景必须是极弱的半透明，才能透出外层的毛玻璃和星空
+*/
+.glass-panel { 
+  background: rgba(15, 15, 20, 0.4) !important; 
+  backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+  border: 1px solid rgba(0, 255, 204, 0.15); /* 使用固定的暗色边框基调，或者用 var(--border-color) */
+  border-radius: 16px; padding: 20px; 
+  pointer-events: auto; box-sizing: border-box;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  display: flex; flex-direction: column;
+}
+/* 浅色主题下调整面板底色，让它看起来白透且清新 */
+body.theme-light .glass-panel { 
+  background: rgba(255, 255, 255, 0.6) !important; 
+  border-color: rgba(0,0,0,0.05); 
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+/* 面板内的统一头部 */
+.glass-panel-header {
+  display: flex; justify-content: space-between; align-items: center;
+  background: rgba(15, 15, 20, 0.6); 
+  backdrop-filter: blur(10px);
+  padding: 15px 25px; border-radius: 12px;
+  border: 1px solid var(--border-color);
+  flex-shrink: 0; 
+}
+body.theme-light .glass-panel-header { 
+  background: rgba(255,255,255,0.7); 
+}
+
+/* =========================================================
+   ✨ 路由与动画 (Animations)
+========================================================= */
+.router-layer { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 5; pointer-events: none; overflow: hidden; }
+
+/* 路由滑动过渡 */
+.slide-fade-enter-active, .slide-fade-leave-active { transition: all 0.4s ease-out; }
+.slide-fade-enter-from { opacity: 0; transform: translateX(30px); }
+.slide-fade-leave-to { opacity: 0; transform: translateX(-30px); }
+
+/* 普通淡入淡出 */
+.fade-enter-active, .fade-leave-active { transition: opacity 0.3s ease; }
+.fade-enter-from, .fade-leave-to { opacity: 0; }
+
+/* 旋转 Loading 动画 */
+.radar-spinner { width: 30px; height: 30px; border: 2px solid rgba(0,255,204,0.2); border-top-color: var(--primary-color); border-radius: 50%; animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* 进度条样式 */
+.progress-bar { width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden; margin-top: 5px; }
+.progress-fill { height: 100%; background: var(--primary-color); transition: width 0.2s linear; }
+
+/* 动态声波 EQ 动画 */
+.eq-icon { color: var(--primary-color); font-weight: bold; font-size: 14px; letter-spacing: 1px;}
+.wave-bar { width: 3px; background: var(--primary-color); animation: waveMove 1s infinite ease-in-out; border-radius: 2px;}
+@keyframes waveMove { 0%, 100% { height: 5px; } 50% { height: 25px; } }

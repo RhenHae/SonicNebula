@@ -15,8 +15,8 @@ warnings.filterwarnings('ignore')
 
 def run_etl_pipeline():
     # 设定输入输出路径
-    INPUT_CSV = "./output/music_features.csv"
-    OUTPUT_PARQUET_DIR = "./data_lake/features.parquet"
+    INPUT_CSV = "././data_storage/output/music_features.csv"
+    OUTPUT_PARQUET_DIR = "././data_storage/data_lake/features.parquet"
     
     if not os.path.exists(INPUT_CSV):
         print(f"❌ 找不到输入文件：{INPUT_CSV}")

@@ -106,16 +106,15 @@ const resetIndicator = () => {
 }
 
 watch(() => route.path, () => {
-  setTimeout(resetIndicator, 100)
+  setTimeout(resetIndicator, 100)// 路由切换后稍微延迟一下，确保 DOM 更新完成再调整指示器位置
 })
 
 onMounted(() => {
-  setTimeout(resetIndicator, 300)
+  setTimeout(resetIndicator, 300)// 初始加载时调整指示器位置，适配默认路由
 })
 </script>
 
 <style scoped>
-/* 你的 CSS 保持完全不变即可 */
 .custom-navbar { position: fixed; top: 0; left: 0; width: 100%; height: 64px; background-color: var(--nav-bg); backdrop-filter: var(--nav-blur); -webkit-backdrop-filter: var(--nav-blur); z-index: 999; display: flex; align-items: center; padding: 0 40px; box-sizing: border-box; border-bottom: 1px solid var(--border-color); transition: background-color 0.3s, backdrop-filter 0.3s; }
 .navbar-title { color: var(--text-main); font-size: 22px; font-weight: 900; letter-spacing: 1px; margin-right: 60px; }
 .navbar-menu { display: flex; gap: 40px; flex: 1; position: relative; }

@@ -1,5 +1,4 @@
 <script setup>
-// 引入免责声明底部组件
 import FooterDisclaimer from '../components/FooterDisclaimer.vue'
 </script>
 
@@ -25,16 +24,15 @@ import FooterDisclaimer from '../components/FooterDisclaimer.vue'
       </div>
     </div>
 
-    <!-- 挂载底部组件 -->
     <FooterDisclaimer />
   </div>
 </template>
 
 <style scoped>
+/* 背景遮罩层：半透明 + 毛玻璃，确保星空透出 */
 .intro-glass-overlay {
   width: 100vw;
   height: 100vh;
-  /* 添加半透明背景色，避免浏览器渲染异常，同时与模糊配合形成毛玻璃效果 */
   background: var(--overlay-bg);
   backdrop-filter: blur(15px);
   -webkit-backdrop-filter: blur(15px);
@@ -42,12 +40,12 @@ import FooterDisclaimer from '../components/FooterDisclaimer.vue'
   align-items: center;
   justify-content: center;
   pointer-events: auto;
-  /* 确保覆盖层位于星云上方，但不遮挡星云（半透明+模糊） */
   position: relative;
 }
 
+/* 内容卡片：使用主题变量，背景随主题切换 */
 .content-box {
-  background: var(--island-bg);            /* 使用灵动岛背景变量（日间白透，夜间黑透） */
+  background: var(--island-bg);
   padding: 50px 60px;
   border-radius: 20px;
   border: 1px solid var(--border-color);
@@ -56,58 +54,59 @@ import FooterDisclaimer from '../components/FooterDisclaimer.vue'
   max-width: 800px;
   animation: floatUp 0.8s cubic-bezier(0.16, 1, 0.3, 1);
   transition: background-color 0.3s, border-color 0.3s;
-  /* 确保内容位于覆盖层之上 */
   position: relative;
   z-index: 2;
 }
 
+/* 主标题：使用主题色 */
 .glitch-title {
-  color: var(--primary-color);              /* 主题色 */
+  color: var(--primary-color);
   font-size: 42px;
   margin-bottom: 10px;
   font-weight: 900;
 }
 
+/* 副标题：使用次要文字色 */
 .subtitle {
-  color: var(--text-sub);                   /* 次要文字 */
+  color: var(--text-sub);
   font-size: 18px;
   margin-bottom: 40px;
   letter-spacing: 2px;
 }
 
+/* 特性网格布局 */
 .feature-grid {
   display: flex;
   gap: 20px;
   text-align: left;
 }
 
+/* 特性卡片：背景和边框随主题变化 */
 .feature-card {
   flex: 1;
-  background: var(--panel-bg);               /* 卡片背景使用面板变量 */
+  background: var(--panel-bg);
   padding: 20px;
   border-radius: 12px;
-  border-top: 2px solid var(--primary-color); /* 主题色边框 */
+  border-top: 2px solid var(--primary-color);
   transition: background-color 0.3s, border-color 0.3s;
 }
 
 .feature-card h3 {
-  color: var(--text-main);                    /* 主要文字 */
+  color: var(--text-main);
   font-size: 16px;
   margin-top: 0;
 }
 
 .feature-card p {
-  color: var(--text-sub);                     /* 次要文字 */
+  color: var(--text-sub);
   font-size: 13px;
   line-height: 1.6;
   margin-bottom: 0;
 }
 
-/* 浮动动画 */
+/* 卡片浮现动画 */
 @keyframes floatUp {
-  /* 从下方轻微浮起并淡入 */
   0% { opacity: 0; transform: translateY(60px); }
-  /* 到达最终位置，保持完全可见 */
   100% { opacity: 1; transform: translateY(0); }
 }
 </style>

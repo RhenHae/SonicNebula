@@ -7,6 +7,7 @@ import NavBar from './components/NavBar.vue'
 import SettingsPanel from './components/SettingsPanel.vue'
 import NebulaCanvas from './components/NebulaCanvas.vue'
 import { useRoute } from 'vue-router'
+import './styles/theme.css'
 
 // 设置面板显隐状态
 const showSettings = ref(false)
@@ -45,7 +46,8 @@ watch(() => route.path, (path) => {
      <div class="router-layer">
       <router-view v-slot="{ Component, route }">
         <!-- 这里的 Component 是当前路由对应的组件，route 是当前路由对象 -->
-        <transition :name="route.meta.transition || 'slide-fade'" mode="out-in" appear>
+        <transition :name="route.meta.transition || 'fade'" mode="out-in" appear><!-- 使用路由元信息中的 transition 定义动画，默认为 slide-fade -->
+           <!-- 使用 :key 来确保每次路由变化时都能触发过渡动画 -->
           <!-- 使用 :key 来确保每次路由变化时都能触发过渡动画 -->
           <div :key="route.path" style="width: 100%; height: 100%;">
             <component :is="Component" />
